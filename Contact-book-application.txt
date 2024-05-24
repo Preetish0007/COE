@@ -1,0 +1,120 @@
+import csv
+import os
+
+CONTACTS_FILE = 'contacts.csv'
+
+# Check if the CSV file exists; if not, create it with the appropriate headers
+if not os.path.exists(CONTACTS_FILE):
+    with open(CONTACTS_FILE, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Name', 'Phone Number', 'Email', 'Address'])
+
+def add_contact():
+    name = input("Enter Name: ")
+    phone_number = input("Enter Phone Number: ")
+    email = input("Enter Email: ")
+    address = input("Enter Address: ")
+    
+    with open(CONTACTS_FILE, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name, phone_number, email, address])
+    
+    print("Contact added successfully!")
+
+def view_contacts():
+    with open(CONTACTS_FILE, mode='r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+        for row in reader:
+            print(f"Name: {row[0]}, Phone Number: {row[1]}, Email: {row[2]}, Address: {row[3]}")
+
+def update_contact():
+    name_to_update = input("Enter the name of the contact to update: ")
+    updated = False
+    
+    with open(CONTACTS_FILE, mode='r') as file:
+        reader = csv.reader(file)
+        contacts = list(reader)
+    
+    for i, contact in enumerate(contacts):
+        if contact[0].lower() == name_to_update.lower():
+            print(f"Current details: Name: {contact[0]}, Phone Number: {contact[1]}, Email: {contact[2]}, Address: {contact[3]}")
+            contacts[i][1] = input("Enter new Phone Number: ")
+            contacts[i][2] = input("Enter new Email: ")
+            contacts[i][3] = input("Enter new Address: ")
+            updated = True
+            break
+    
+    if updated:
+        with open(CONTACTS_FILE, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(contacts)
+        print("Contact updated successfully!")
+    else:
+        print("Contact not found.")
+
+def delete_contact():
+    name_to_delete = input("Enter the name of the contact to delete: ")
+    deleted = False
+    
+    with open(CONTACTS_FILE, mode='r') as file:
+        reader = csv.reader(file)
+        contacts = list(reader)
+    
+    for i, contact in enumerate(contacts):
+        if contact[0].lower() == name_to_delete.lower():
+            del contacts[i]
+            deleted = True
+            break
+    
+    if deleted:
+        with open(CONTACTS_FILE, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(contacts)
+        print("Contact deleted successfully!")
+    else:
+        print("Contact not found.")
+
+def search_contact():
+    search_term = input("Enter the name, phone number, email, or address to search: ").lower()
+    
+    with open(CONTACTS_FILE, mode='r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+        results = [row for row in reader if search_term in map(str.lower, row)]
+    
+    if results:
+        for row in results:
+            print(f"Name: {row[0]}, Phone Number: {row[1]}, Email: {row[2]}, Address: {row[3]}")
+    else:
+        print("No contacts found.")
+
+def main():
+    while True:
+        print("\nContact Book Menu:")
+        print("1. Add Contact")
+        print("2. View Contacts")
+        print("3. Update Contact")
+        print("4. Delete Contact")
+        print("5. Search Contact")
+        print("6. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == '1':
+            add_contact()
+        elif choice == '2':
+            view_contacts()
+        elif choice == '3':
+            update_contact()
+        elif choice == '4':
+            delete_contact()
+        elif choice == '5':
+            search_contact()
+        elif choice == '6':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == '__main__':
+    main()
